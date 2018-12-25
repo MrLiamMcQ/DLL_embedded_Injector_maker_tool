@@ -1,0 +1,15 @@
+C:\Users\Liam\source\repos\DllEmbeddedInjectorMaker\DllEmbeddedInjectorMaker\bin\Debug\DllEmbeddedInjectorMaker.exe.config
+C:\Users\Liam\source\repos\DllEmbeddedInjectorMaker\DllEmbeddedInjectorMaker\bin\Debug\DllEmbeddedInjectorMaker.exe
+C:\Users\Liam\source\repos\DllEmbeddedInjectorMaker\DllEmbeddedInjectorMaker\bin\Debug\DllEmbeddedInjectorMaker.pdb
+C:\Users\Liam\source\repos\DllEmbeddedInjectorMaker\DllEmbeddedInjectorMaker\obj\Debug\DllEmbeddedInjectorMaker.csprojAssemblyReference.cache
+C:\Users\Liam\source\repos\DllEmbeddedInjectorMaker\DllEmbeddedInjectorMaker\obj\Debug\MainWindow.g.cs
+C:\Users\Liam\source\repos\DllEmbeddedInjectorMaker\DllEmbeddedInjectorMaker\obj\Debug\App.g.cs
+C:\Users\Liam\source\repos\DllEmbeddedInjectorMaker\DllEmbeddedInjectorMaker\obj\Debug\DllEmbeddedInjectorMaker_MarkupCompile.cache
+C:\Users\Liam\source\repos\DllEmbeddedInjectorMaker\DllEmbeddedInjectorMaker\obj\Debug\DllEmbeddedInjectorMaker_MarkupCompile.lref
+C:\Users\Liam\source\repos\DllEmbeddedInjectorMaker\DllEmbeddedInjectorMaker\obj\Debug\MainWindow.baml
+C:\Users\Liam\source\repos\DllEmbeddedInjectorMaker\DllEmbeddedInjectorMaker\obj\Debug\DllEmbeddedInjectorMaker.g.resources
+C:\Users\Liam\source\repos\DllEmbeddedInjectorMaker\DllEmbeddedInjectorMaker\obj\Debug\DllEmbeddedInjectorMaker.Properties.Resources.resources
+C:\Users\Liam\source\repos\DllEmbeddedInjectorMaker\DllEmbeddedInjectorMaker\obj\Debug\DllEmbeddedInjectorMaker.csproj.GenerateResource.cache
+C:\Users\Liam\source\repos\DllEmbeddedInjectorMaker\DllEmbeddedInjectorMaker\obj\Debug\DllEmbeddedInjectorMaker.csproj.CoreCompileInputs.cache
+C:\Users\Liam\source\repos\DllEmbeddedInjectorMaker\DllEmbeddedInjectorMaker\obj\Debug\DllEmbeddedInjectorMaker.exe
+C:\Users\Liam\source\repos\DllEmbeddedInjectorMaker\DllEmbeddedInjectorMaker\obj\Debug\DllEmbeddedInjectorMaker.pdb
