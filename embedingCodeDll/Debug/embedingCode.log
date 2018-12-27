@@ -1,0 +1,3 @@
+﻿  embedingCode.cpp
+c:\users\liam\source\repos\simpledllembedder\embedingcode\embedingcode.cpp(45): warning C4244: 'initializing': conversion from 'long' to 'WORD', possible loss of data
+  embedingCode.vcxproj -> C:\Users\Liam\source\repos\SimpleDllEmbedder\Debug\embedingCode.dll
