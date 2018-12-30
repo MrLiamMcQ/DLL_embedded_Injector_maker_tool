@@ -1,6 +1,0 @@
-﻿  ManualInjector.cpp
-c:\users\liam\desktop\manualmap-master\manualmap-master\manualinjector\manualinjector.cpp(16): error C2664: 'int strcmp(const char *,const char *)': cannot convert argument 2 from 'WCHAR [260]' to 'const char *'
-  c:\users\liam\desktop\manualmap-master\manualmap-master\manualinjector\manualinjector.cpp(16): note: Types pointed to are unrelated; conversion requires reinterpret_cast, C-style cast or function-style cast
-c:\users\liam\desktop\manualmap-master\manualmap-master\manualinjector\manualinjector.cpp(65): warning C4244: '+=': conversion from 'DWORD64' to 'DWORD', possible loss of data
-c:\users\liam\desktop\manualmap-master\manualmap-master\manualinjector\manualinjector.cpp(97): warning C4244: '=': conversion from 'DWORD64' to 'DWORD', possible loss of data
-c:\users\liam\desktop\manualmap-master\manualmap-master\manualinjector\manualinjector.cpp(107): warning C4244: '=': conversion from 'DWORD64' to 'DWORD', possible loss of data

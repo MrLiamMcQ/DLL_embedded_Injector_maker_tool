@@ -1,8 +1,10 @@
-﻿  embedingCode.cpp
-     Creating library C:\Users\Liam\source\repos\SimpleDllEmbedder\Release\embedingCode.lib and object C:\Users\Liam\source\repos\SimpleDllEmbedder\Release\embedingCode.exp
+﻿  stdafx.cpp
+  dllmain.cpp
+  embedingCode.cpp
+     Creating library C:\Users\Liam\source\repos\DllEmbeddedInjectorMaker\DLL_embedded_Injector_maker_tool\embedingCodeDll\Release\embedingCode.lib and object C:\Users\Liam\source\repos\DllEmbeddedInjectorMaker\DLL_embedded_Injector_maker_tool\embedingCodeDll\Release\embedingCode.exp
   Generating code
-  4 of 7 functions (57.1%) were compiled, the rest were copied from previous compilation.
-    3 functions were new in current compilation
+  1 of 7 functions (14.3%) were compiled, the rest were copied from previous compilation.
+    1 functions were new in current compilation
     0 functions had inline decision re-evaluated but remain unchanged
   Finished generating code
-  embedingCode.vcxproj -> C:\Users\Liam\source\repos\SimpleDllEmbedder\Release\embedingCode.dll
+  embedingCode.vcxproj -> C:\Users\Liam\source\repos\DllEmbeddedInjectorMaker\DLL_embedded_Injector_maker_tool\embedingCodeDll\Release\embedingCode.dll

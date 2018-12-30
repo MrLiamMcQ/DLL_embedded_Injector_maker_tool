@@ -1,3 +1,4 @@
 ﻿  embedingCode.cpp
-c:\users\liam\source\repos\simpledllembedder\embedingcode\embedingcode.cpp(45): warning C4244: 'initializing': conversion from 'long' to 'WORD', possible loss of data
-  embedingCode.vcxproj -> C:\Users\Liam\source\repos\SimpleDllEmbedder\Debug\embedingCode.dll
+  LINK : C:\Users\Liam\source\repos\DllEmbeddedInjectorMaker\DLL_embedded_Injector_maker_tool\embedingCodeDll\Debug\embedingCode.dll not found or not built by the last incremental link; performing full link
+     Creating library C:\Users\Liam\source\repos\DllEmbeddedInjectorMaker\DLL_embedded_Injector_maker_tool\embedingCodeDll\Debug\embedingCode.lib and object C:\Users\Liam\source\repos\DllEmbeddedInjectorMaker\DLL_embedded_Injector_maker_tool\embedingCodeDll\Debug\embedingCode.exp
+  embedingCode.vcxproj -> C:\Users\Liam\source\repos\DllEmbeddedInjectorMaker\DLL_embedded_Injector_maker_tool\embedingCodeDll\Debug\embedingCode.dll

@@ -48,13 +48,13 @@ DWORD __stdcall LibraryLoader(LPVOID Memory)
 
 	PIMAGE_BASE_RELOCATION pIBR = LoaderParams->BaseReloc;
 
-	DWORD64 delta = (DWORD64)((LPBYTE)LoaderParams->ImageBase - LoaderParams->NtHeaders->OptionalHeader.ImageBase); // Calculate the delta
+	size_t delta = (size_t)((LPBYTE)LoaderParams->ImageBase - LoaderParams->NtHeaders->OptionalHeader.ImageBase); // Calculate the delta
 
 	while (pIBR->VirtualAddress)
 	{
 		if (pIBR->SizeOfBlock >= sizeof(IMAGE_BASE_RELOCATION))
 		{
-			int count = (pIBR->SizeOfBlock - sizeof(IMAGE_BASE_RELOCATION)) / sizeof(DWORD);// WARNING EDDITED FROM WORD
+			int count = (pIBR->SizeOfBlock - sizeof(IMAGE_BASE_RELOCATION)) / (sizeof(size_t)/2);// WARNING EDDITED FROM WORD
 			PWORD list = (PWORD)(pIBR + 1);
 
 			for (int i = 0; i < count; i++)
@@ -88,7 +88,7 @@ DWORD __stdcall LibraryLoader(LPVOID Memory)
 			if (OrigFirstThunk->u1.Ordinal & IMAGE_ORDINAL_FLAG)
 			{
 				// Import by ordinal
-				DWORD64 Function = (DWORD64)LoaderParams->fnGetProcAddress(hModule,
+				size_t Function = (size_t)LoaderParams->fnGetProcAddress(hModule,
 					(LPCSTR)(OrigFirstThunk->u1.Ordinal & 0xFFFF));
 
 				if (!Function)
@@ -100,7 +100,7 @@ DWORD __stdcall LibraryLoader(LPVOID Memory)
 			{
 				// Import by name
 				PIMAGE_IMPORT_BY_NAME pIBN = (PIMAGE_IMPORT_BY_NAME)((LPBYTE)LoaderParams->ImageBase + OrigFirstThunk->u1.AddressOfData);
-				DWORD64 Function = (DWORD64)LoaderParams->fnGetProcAddress(hModule, (LPCSTR)pIBN->Name);
+				size_t Function = (size_t)LoaderParams->fnGetProcAddress(hModule, (LPCSTR)pIBN->Name);
 				if (!Function)
 					return FALSE;
 
@@ -126,28 +126,51 @@ DWORD __stdcall stub()
 	return 0;
 }
 
+void error(const char* error) {
+	std::cout << "ERROR " << error << std::endl;
+	system("pause");
+}
+
 int main(int argc, char*argv[])
 {
+	loaderdata LoaderParams;
 	const char* exeName = "PLACEHOLDERPLACEHOLDERPLACEHOLDER"; 
+	//const char* exeName = "explorer.exe";//MSBuild.exe  explorer.exe
 
-	DWORD ProcessId = FindProcessId(exeName);
 	std::cout << "TargetProcess : " << exeName << std::endl;
+	DWORD ProcessId = FindProcessId(exeName);
+	if (!ProcessId) {
+		error("Process not found");
+		return -1;
+	}
+		
 	std::cout << "Got Process id : " << ProcessId << std::endl;
 
-	loaderdata LoaderParams;
+	size_t currentExeAddres = (size_t)GetModuleHandle(0);
 
-	DWORD64 exe = (DWORD64)GetModuleHandle(0);
-	DWORD sizeOfDll =*(DWORD*)((exe+*(DWORD*)(exe+60)+0x110)+(0x28*(*(WORD*)(exe+*(DWORD*)(exe+60)+6)-1)));
-	DWORD64 AddressOfDll =(DWORD64)(exe+*(DWORD*)((exe+*(DWORD*)(exe+60)+0x114)+(0x28*(*(WORD*)(exe+*(DWORD*)(exe+60)+6)-1))));
+	PIMAGE_DOS_HEADER dosHeader = (PIMAGE_DOS_HEADER)currentExeAddres;
+	PIMAGE_NT_HEADERS DllNtHeader = (PIMAGE_NT_HEADERS)((LPBYTE)currentExeAddres + dosHeader->e_lfanew);
+	PIMAGE_SECTION_HEADER sectionHeaders = (PIMAGE_SECTION_HEADER)(currentExeAddres + dosHeader->e_lfanew + sizeof(IMAGE_NT_HEADERS));
+	DWORD offsetToDllData = sectionHeaders[DllNtHeader->FileHeader.NumberOfSections - 1].VirtualAddress;
 
-	// maybe do fancy offset from sizeOfDllz
+	DWORD sizeOfDll = sectionHeaders[DllNtHeader->FileHeader.NumberOfSections - 1].Misc.VirtualSize;
+	size_t AddressOfDll = (size_t)currentExeAddres + (size_t)offsetToDllData;
+
+	#pragma warning(disable : 4996)
+
+	//FILE* file = fopen("C:\\Users\\Liam\\source\\repos\\Beep\\x64\\Release\\Beep.dll", "rb");// 
+	//fseek(file, 0, SEEK_END);
+	//int sizeOfDll = ftell(file);
+	//fseek(file, 0, SEEK_SET);
+	//char * AddressOfDll = (char*)malloc(sizeof(char)*sizeOfDll);
+	//fread(AddressOfDll, 1, sizeOfDll, file);
+	//fclose(file);
 
 	PVOID FileBuffer = VirtualAlloc(NULL, sizeOfDll, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
-	memcpy(FileBuffer, (DWORD64*)AddressOfDll, sizeOfDll);
+	memcpy(FileBuffer, (size_t*)AddressOfDll, sizeOfDll);
 
 	// Target Dll's DOS Header
 	PIMAGE_DOS_HEADER pDosHeader = (PIMAGE_DOS_HEADER)FileBuffer;
-	// Target Dll's NT Headers
 	PIMAGE_NT_HEADERS pNtHeaders = (PIMAGE_NT_HEADERS)((LPBYTE)FileBuffer + pDosHeader->e_lfanew);
 
 	//printf("file header: %p\n", pNtHeaders->OptionalHeader.Magic);
@@ -156,7 +179,7 @@ int main(int argc, char*argv[])
 	// Opening target process.
 	HANDLE hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, ProcessId);
 	if (hProcess == NULL) {
-		std::cout << "cant open process Run As Admin" << std::endl; return -1;
+		std::cout << "cant open process Run As Admin" << std::endl; system("pause"); return -1;
 	}
 	std::cout << "opend Process: " << hProcess << std::endl;
 		
@@ -169,7 +192,7 @@ int main(int argc, char*argv[])
 	bool didwrite = WriteProcessMemory(hProcess, ExecutableImage, FileBuffer,
 		pNtHeaders->OptionalHeader.SizeOfHeaders, NULL);
 	if (!didwrite) {
-		//printf("copying headers : %i\n", didwrite);
+		printf("copying headers : %i\n", didwrite);
 	}
 
 	// Target Dll's Section Header
@@ -206,7 +229,7 @@ int main(int argc, char*argv[])
 		NULL);
 	// Write the loader code to target process
 	WriteProcessMemory(hProcess, (PVOID)((loaderdata*)LoaderMemory + 1), LibraryLoader,
-		(DWORD64)stub - (DWORD64)LibraryLoader, NULL);
+		(size_t)stub - (size_t)LibraryLoader, NULL);
 	// Create a remote thread to execute the loader code
 	HANDLE hThread = CreateRemoteThread(hProcess, NULL, 0, (LPTHREAD_START_ROUTINE)((loaderdata*)LoaderMemory + 1),
 		LoaderMemory, 0, NULL);
