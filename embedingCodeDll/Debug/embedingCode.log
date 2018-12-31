@@ -1,4 +1,0 @@
-﻿  embedingCode.cpp
-  LINK : C:\Users\Liam\source\repos\DllEmbeddedInjectorMaker\DLL_embedded_Injector_maker_tool\embedingCodeDll\Debug\embedingCode.dll not found or not built by the last incremental link; performing full link
-     Creating library C:\Users\Liam\source\repos\DllEmbeddedInjectorMaker\DLL_embedded_Injector_maker_tool\embedingCodeDll\Debug\embedingCode.lib and object C:\Users\Liam\source\repos\DllEmbeddedInjectorMaker\DLL_embedded_Injector_maker_tool\embedingCodeDll\Debug\embedingCode.exp
-  embedingCode.vcxproj -> C:\Users\Liam\source\repos\DllEmbeddedInjectorMaker\DLL_embedded_Injector_maker_tool\embedingCodeDll\Debug\embedingCode.dll

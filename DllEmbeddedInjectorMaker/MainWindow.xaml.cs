@@ -173,10 +173,6 @@ namespace DllEmbeddedInjectorMaker
                 var offsetAmount = count;
 
                 for (int i = 0; i < textBox1.Text.Length; i++) {
-
-                    char value = (char)bytes[offsetAmount];
-                    char value2 = (char)textBox1.Text[i];
-
                     bytes[offsetAmount] = (byte)textBox1.Text[i];
                     offsetAmount++;
                 }
@@ -186,7 +182,7 @@ namespace DllEmbeddedInjectorMaker
             }
             string loaction = AppDomain.CurrentDomain.BaseDirectory;
             string targetLoc = loaction + outputName;
-            EmbedDllFile(FileList[0].ToCharArray(), targetLoc.ToCharArray());
+            EmbedDllFile(FileList[indexLocation].ToCharArray(), targetLoc.ToCharArray());
             Process.Start(loaction);// open file view expolrer
             return;
         }// use embedding code test to find my not append  
