@@ -4,7 +4,9 @@
 #include "iostream"
 
 using namespace std;
-// ONLY WORKS ON RELEASE COMPILE
+
+// ONLY WORKS ON RELEASE COMPILE, COMPLIE ON 32 BIT AND 64 BIT 
+
 std::vector<DWORD> PidList;
 DWORD FindProcessId(const char* ProcessName) {
 	PidList.clear();
@@ -210,8 +212,6 @@ int main(int argc, char*argv[])
 		PAGE_EXECUTE_READWRITE); // Allocate memory for the loader code
 
 	//printf("loader Memory Alocated : 0x%p\n", LoaderMemory);
-
-	
 
 	LoaderParams.ImageBase = ExecutableImage;
 	LoaderParams.NtHeaders = (PIMAGE_NT_HEADERS)((LPBYTE)ExecutableImage + pDosHeader->e_lfanew);

@@ -18,7 +18,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Diagnostics;
-
+using System.ComponentModel;
 
 
 public enum codeType
@@ -27,7 +27,7 @@ public enum codeType
     x86,
     unknowen
 }
-// ONLY WORKS ON DEBUG COMPILE
+
 namespace DllEmbeddedInjectorMaker
 {
 
@@ -36,7 +36,8 @@ namespace DllEmbeddedInjectorMaker
     /// </summary>
     public partial class MainWindow : Window
     {
-        
+        const string DllLocation = "C:\\ProgramData\\embedingCode.dll";
+
         DragEventArgs savedEvent = null;
 
         public static byte[] readEmbeddedResource(string resourceName)
@@ -96,23 +97,23 @@ namespace DllEmbeddedInjectorMaker
 
         public static void WriteDlls(string outputName, string internalName)
         {
-            using (FileStream fs = File.Create(outputName))//"embedingCode.dll"
+            using (FileStream fs = File.Create(outputName))
             {
-                byte[] bytes = readEmbeddedResource(internalName);//"DllEmbeddedInjectorMaker.embedingCode.dll"
+                byte[] bytes = readEmbeddedResource(internalName);
                 fs.Write(bytes, 0, bytes.Length);
             }
         }
         
-        [DllImport(@"embedingCode.dll", EntryPoint = "?EmbedDllFile@@YAXQAD0@Z")]
+        [DllImport(DllLocation)]
         public static extern void EmbedDllFile(char[] dllFile, char[] InjectorFile);
 
         public MainWindow()
         {
             InitializeComponent();
 
-            if (!File.Exists("embedingCode.dll"))
+            if (!File.Exists(DllLocation))
             {
-                WriteDlls("embedingCode.dll", "DllEmbeddedInjectorMaker.embedingCode.dll");
+                WriteDlls(DllLocation, "DllEmbeddedInjectorMaker.embedingCode.dll");
             }
         }
         void drop_files(object sender, DragEventArgs e)
@@ -195,6 +196,13 @@ namespace DllEmbeddedInjectorMaker
         private void button_Copy_Click(object sender, RoutedEventArgs e)
         {
             drop_files(0, savedEvent);
+        }
+
+        void closingEvent(object sender, CancelEventArgs e)
+        {
+#if DEBUG
+            File.Delete(DllLocation);
+#endif
         }
     }
 }
