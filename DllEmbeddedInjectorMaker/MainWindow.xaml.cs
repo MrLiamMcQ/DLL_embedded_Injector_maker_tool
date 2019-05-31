@@ -186,7 +186,7 @@ namespace DllEmbeddedInjectorMaker
             EmbedDllFile(FileList[indexLocation].ToCharArray(), targetLoc.ToCharArray());
             Process.Start(loaction);// open file view expolrer
             return;
-        }// use embedding code test to find my not append  
+        }
 
         private void button_Click(object sender, RoutedEventArgs e)
         {
@@ -201,6 +201,8 @@ namespace DllEmbeddedInjectorMaker
         void closingEvent(object sender, CancelEventArgs e)
         {
 #if DEBUG
+            // Bug 
+            // only deleats if has not been used to create new application.
             File.Delete(DllLocation);
 #endif
         }

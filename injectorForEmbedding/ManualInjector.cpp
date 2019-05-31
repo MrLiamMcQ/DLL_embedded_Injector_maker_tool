@@ -5,7 +5,7 @@
 
 using namespace std;
 
-// ONLY WORKS ON RELEASE COMPILE, COMPLIE ON 32 BIT AND 64 BIT 
+// ONLY WORKS ON RELEASE COMPILE only, COMPLIE ON 32 BIT AND 64 BIT 
 
 std::vector<DWORD> PidList;
 DWORD FindProcessId(const char* ProcessName) {
@@ -133,11 +133,13 @@ void error(const char* error) {
 	system("pause");
 }
 
+#pragma warning(disable : 4996)
+
 int main(int argc, char*argv[])
 {
 	loaderdata LoaderParams;
+	// string will be changed by c# app
 	const char* exeName = "PLACEHOLDERPLACEHOLDERPLACEHOLDER"; 
-	//const char* exeName = "explorer.exe";//MSBuild.exe  explorer.exe
 
 	std::cout << "TargetProcess : " << exeName << std::endl;
 	DWORD ProcessId = FindProcessId(exeName);
@@ -148,36 +150,20 @@ int main(int argc, char*argv[])
 		
 	std::cout << "Got Process id : " << ProcessId << std::endl;
 
+	// getting the dll mem location and size that is loaded in the current process
 	size_t currentExeAddres = (size_t)GetModuleHandle(0);
-
 	PIMAGE_DOS_HEADER dosHeader = (PIMAGE_DOS_HEADER)currentExeAddres;
 	PIMAGE_NT_HEADERS DllNtHeader = (PIMAGE_NT_HEADERS)((LPBYTE)currentExeAddres + dosHeader->e_lfanew);
 	PIMAGE_SECTION_HEADER sectionHeaders = (PIMAGE_SECTION_HEADER)(currentExeAddres + dosHeader->e_lfanew + sizeof(IMAGE_NT_HEADERS));
 	DWORD offsetToDllData = sectionHeaders[DllNtHeader->FileHeader.NumberOfSections - 1].VirtualAddress;
 
 	DWORD sizeOfDll = sectionHeaders[DllNtHeader->FileHeader.NumberOfSections - 1].Misc.VirtualSize;
-	size_t AddressOfDll = (size_t)currentExeAddres + (size_t)offsetToDllData;
-
-	#pragma warning(disable : 4996)
-
-	//FILE* file = fopen("C:\\Users\\Liam\\source\\repos\\Beep\\x64\\Release\\Beep.dll", "rb");// 
-	//fseek(file, 0, SEEK_END);
-	//int sizeOfDll = ftell(file);
-	//fseek(file, 0, SEEK_SET);
-	//char * AddressOfDll = (char*)malloc(sizeof(char)*sizeOfDll);
-	//fread(AddressOfDll, 1, sizeOfDll, file);
-	//fclose(file);
-
-	PVOID FileBuffer = VirtualAlloc(NULL, sizeOfDll, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
-	memcpy(FileBuffer, (size_t*)AddressOfDll, sizeOfDll);
+	PVOID AddressOfDll = (PVOID)((size_t)currentExeAddres + (size_t)offsetToDllData);
 
 	// Target Dll's DOS Header
-	PIMAGE_DOS_HEADER pDosHeader = (PIMAGE_DOS_HEADER)FileBuffer;
-	PIMAGE_NT_HEADERS pNtHeaders = (PIMAGE_NT_HEADERS)((LPBYTE)FileBuffer + pDosHeader->e_lfanew);
+	PIMAGE_DOS_HEADER pDosHeader = (PIMAGE_DOS_HEADER)AddressOfDll;
+	PIMAGE_NT_HEADERS pNtHeaders = (PIMAGE_NT_HEADERS)((LPBYTE)AddressOfDll + pDosHeader->e_lfanew);
 
-	//printf("file header: %p\n", pNtHeaders->OptionalHeader.Magic);
-
-	//system("pause");
 	// Opening target process.
 	HANDLE hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, ProcessId);
 	if (hProcess == NULL) {
@@ -189,9 +175,8 @@ int main(int argc, char*argv[])
 	PVOID ExecutableImage = VirtualAllocEx(hProcess, NULL, pNtHeaders->OptionalHeader.SizeOfImage,
 		MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
 
-	//printf("alocated Memory: 0x%p\n", ExecutableImage);
 	// Copy the headers to target process
-	bool didwrite = WriteProcessMemory(hProcess, ExecutableImage, FileBuffer,
+	bool didwrite = WriteProcessMemory(hProcess, ExecutableImage, AddressOfDll,
 		pNtHeaders->OptionalHeader.SizeOfHeaders, NULL);
 	if (!didwrite) {
 		printf("copying headers : %i\n", didwrite);
@@ -203,13 +188,13 @@ int main(int argc, char*argv[])
 	for (int i = 0; i < pNtHeaders->FileHeader.NumberOfSections; i++)
 	{
 		bool writePoeration = WriteProcessMemory(hProcess, (PVOID)((LPBYTE)ExecutableImage + pSectHeader[i].VirtualAddress),
-			(PVOID)((LPBYTE)FileBuffer + pSectHeader[i].PointerToRawData), pSectHeader[i].SizeOfRawData, NULL);
+			(PVOID)((LPBYTE)AddressOfDll + pSectHeader[i].PointerToRawData), pSectHeader[i].SizeOfRawData, NULL);
 		//printf("Writeing Sections : %i\n", writePoeration);
 	}
 
 	// Allocating memory for the loader code.
 	PVOID LoaderMemory = VirtualAllocEx(hProcess, NULL, 4096, MEM_COMMIT | MEM_RESERVE,
-		PAGE_EXECUTE_READWRITE); // Allocate memory for the loader code
+		PAGE_EXECUTE_READWRITE);
 
 	//printf("loader Memory Alocated : 0x%p\n", LoaderMemory);
 
@@ -240,12 +225,10 @@ int main(int argc, char*argv[])
 	// Wait for the loader to finish executing
 	WaitForSingleObject(hThread, 100);
 	
-	
 	CloseHandle(hThread);//
 	//std::cin.get();
 
 	// free the allocated loader code
-	VirtualFree(FileBuffer, 0, MEM_RELEASE);//
 	CloseHandle(hProcess);//
 	//CloseHandle(hFile);//
 	VirtualFreeEx(hProcess, LoaderMemory, 0, MEM_RELEASE);
