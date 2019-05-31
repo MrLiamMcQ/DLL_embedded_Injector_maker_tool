@@ -15,3 +15,9 @@ Instructions on usage:
 4. drag and drop your dll you want injecting onto any white space
 5. a file should now be created called "InjectorWithInbeddedDLL.exe"
 6. run this new file, it should inject the dll you draged onto the main program into the traget dll
+
+System Requirements
+OS: Windows 10
+Processor: 32 bit minimum
+Microsoft .NET Framework
+Microsoft Visual C++ 2017 Redistributable
