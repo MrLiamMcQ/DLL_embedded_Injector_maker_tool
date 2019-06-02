@@ -5,18 +5,18 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:DllEmbeddedInjectorMaker"
         mc:Ignorable="d"
-        Title="Embedded Dll Injector Maker" Height="325.997" Width="800"  AllowDrop="True"  Drop="drop_files"
+        Title="Embedded Dll Injector Maker" Height="346" Width="850"  AllowDrop="True"  Drop="drop_files"
         Closing="closingEvent"
         >
-    <Grid Margin="0,0,0,2">
+    <Grid Margin="0,0,-24,0" >
         <Label x:Name="label" Content="DLL Name:" HorizontalAlignment="Left" Margin="56,52,0,0" VerticalAlignment="Top"/>
         <TextBox x:Name="textBox1" HorizontalAlignment="Left" Height="23" Margin="203,95,0,0" TextWrapping="Wrap" Text="explorer.exe" VerticalAlignment="Top" Width="184"/>
         <Label x:Name="label1" Content="Target exe for injector:" HorizontalAlignment="Left" Margin="56,91,0,0" VerticalAlignment="Top"/>
-        <Label x:Name="label3" Content="Drag &amp; Drop the DLL" HorizontalAlignment="Left" Margin="498,41,0,0" VerticalAlignment="Top" FontSize="22" Height="43" Width="266"/>
-        <TextBox x:Name="textBox" HorizontalAlignment="Left" Height="23" Margin="203,56,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="184"/>
-        <Label x:Name="label2" Content="Enter target exe manualy" HorizontalAlignment="Left" Margin="498,95,0,0" VerticalAlignment="Top" Width="150"/>
-        <Button x:Name="button" Content="Open Output Location" Margin="444,219,0,0" VerticalAlignment="Top" Height="47" Click="button_Click" HorizontalAlignment="Left" Width="320"/>
-        <Button x:Name="button_Copy" Content="&#xD;&#xA;Redo Output File&#xD;&#xA;" HorizontalAlignment="Left" Margin="56,219,0,0" VerticalAlignment="Top" Width="315" Height="47" Click="button_Copy_Click"/>
+        <Label x:Name="label3" Content="Drag &amp; Drop the DLL" HorizontalAlignment="Left" Margin="455,41,0,0" VerticalAlignment="Top" FontSize="22" Height="43" Width="266"/>
+        <TextBox x:Name="textBox" HorizontalAlignment="Left" Height="23" Margin="203,55,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="184"/>
+        <Label x:Name="label2" Content="Enter target exe manualy" HorizontalAlignment="Left" Margin="455,91,0,0" VerticalAlignment="Top" Width="150"/>
+        <Button x:Name="button" Content="Open Output Location" Margin="455,219,0,0" VerticalAlignment="Top" Height="47" Click="button_Click" Width="331" HorizontalAlignment="Left"/>
+        <Button x:Name="button_Copy" Content="Redo Output File" HorizontalAlignment="Left" Margin="56,219,0,0" Width="331" Click="button_Copy_Click" Height="47" VerticalAlignment="Top"/>
 
     </Grid>
 </Window>

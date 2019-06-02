@@ -225,15 +225,14 @@ int main(int argc, char*argv[])
 	// Wait for the loader to finish executing
 	WaitForSingleObject(hThread, 100);
 	
-	CloseHandle(hThread);//
-	//std::cin.get();
-
 	// free the allocated loader code
+	//VirtualFreeEx(hProcess, LoaderMemory, 0, MEM_RELEASE);
+
+	CloseHandle(hThread);//
 	CloseHandle(hProcess);//
-	//CloseHandle(hFile);//
-	VirtualFreeEx(hProcess, LoaderMemory, 0, MEM_RELEASE);
 
 	printf("injected\n");
 	system("pause");
+
 	return 0;
 }
