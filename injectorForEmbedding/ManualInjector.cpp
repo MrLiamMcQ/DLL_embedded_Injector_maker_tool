@@ -129,8 +129,9 @@ DWORD __stdcall stub()
 }
 
 void error(const char* error) {
-	std::cout << "ERROR " << error << std::endl;
+	std::cout << "Error " << error << std::endl;
 	system("pause");
+	exit(-99);
 }
 
 #pragma warning(disable : 4996)
@@ -138,49 +139,60 @@ void error(const char* error) {
 int main(int argc, char*argv[])
 {
 	loaderdata LoaderParams;
-	// string will be changed by c# app
-	const char* exeName = "PLACEHOLDERPLACEHOLDERPLACEHOLDER"; 
+	int targetHeadIndex = -1;
+	const char* exeName = "PLACEHOLDERPLACEHOLDERPLACEHOLDER"; 	// string will be changed by c# app
 
-	std::cout << "TargetProcess : " << exeName << std::endl;
+	printf("TargetProcess: %s \n", exeName);
+
 	DWORD ProcessId = FindProcessId(exeName);
-	if (!ProcessId) {
+	if (ProcessId==0)
 		error("Process not found");
-		return -1;
-	}
-		
-	std::cout << "Got Process id : " << ProcessId << std::endl;
+	
+	printf("Got Process id: 0x%x \n", ProcessId);
 
 	// getting the dll mem location and size that is loaded in the current process
 	size_t currentExeAddres = (size_t)GetModuleHandle(0);
 	PIMAGE_DOS_HEADER dosHeader = (PIMAGE_DOS_HEADER)currentExeAddres;
 	PIMAGE_NT_HEADERS DllNtHeader = (PIMAGE_NT_HEADERS)((LPBYTE)currentExeAddres + dosHeader->e_lfanew);
 	PIMAGE_SECTION_HEADER sectionHeaders = (PIMAGE_SECTION_HEADER)(currentExeAddres + dosHeader->e_lfanew + sizeof(IMAGE_NT_HEADERS));
-	DWORD offsetToDllData = sectionHeaders[DllNtHeader->FileHeader.NumberOfSections - 1].VirtualAddress;
 
-	DWORD sizeOfDll = sectionHeaders[DllNtHeader->FileHeader.NumberOfSections - 1].Misc.VirtualSize;
+	for (int i = 1; i < DllNtHeader->FileHeader.NumberOfSections; i++) {
+		char * nameOfSection = new char[8];
+		memcpy(nameOfSection, sectionHeaders[i].Name,8);
+		if (strcmp(nameOfSection,".ATH")==0)
+			targetHeadIndex = i;
+		delete[] nameOfSection;
+	}
+	if (targetHeadIndex == -1)
+		error("could not find embedded dll");
+
+	DWORD offsetToDllData = sectionHeaders[targetHeadIndex].VirtualAddress;
+	DWORD sizeOfDll = sectionHeaders[targetHeadIndex].Misc.VirtualSize;
 	PVOID AddressOfDll = (PVOID)((size_t)currentExeAddres + (size_t)offsetToDllData);
 
 	// Target Dll's DOS Header
 	PIMAGE_DOS_HEADER pDosHeader = (PIMAGE_DOS_HEADER)AddressOfDll;
 	PIMAGE_NT_HEADERS pNtHeaders = (PIMAGE_NT_HEADERS)((LPBYTE)AddressOfDll + pDosHeader->e_lfanew);
 
-	// Opening target process.
 	HANDLE hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, ProcessId);
-	if (hProcess == NULL) {
-		std::cout << "cant open process Run As Admin" << std::endl; system("pause"); return -1;
-	}
-	std::cout << "opend Process: " << hProcess << std::endl;
+	if (hProcess == NULL)
+		error("cant open process Run As Admin");
+	
+	printf("opend Process: 0x%x \n", hProcess);
 		
 	// Allocating memory for the DLL
 	PVOID ExecutableImage = VirtualAllocEx(hProcess, NULL, pNtHeaders->OptionalHeader.SizeOfImage,
 		MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
 
+	if (ExecutableImage == 0)
+		error("could not allocate memory in target process, Run As Admin");
+
 	// Copy the headers to target process
 	bool didwrite = WriteProcessMemory(hProcess, ExecutableImage, AddressOfDll,
 		pNtHeaders->OptionalHeader.SizeOfHeaders, NULL);
-	if (!didwrite) {
-		printf("copying headers : %i\n", didwrite);
-	}
+
+	if(didwrite==0)
+		error("could not write memory in target process, Run As Admin");
 
 	// Target Dll's Section Header
 	PIMAGE_SECTION_HEADER pSectHeader = (PIMAGE_SECTION_HEADER)(pNtHeaders + 1);
@@ -189,14 +201,17 @@ int main(int argc, char*argv[])
 	{
 		bool writePoeration = WriteProcessMemory(hProcess, (PVOID)((LPBYTE)ExecutableImage + pSectHeader[i].VirtualAddress),
 			(PVOID)((LPBYTE)AddressOfDll + pSectHeader[i].PointerToRawData), pSectHeader[i].SizeOfRawData, NULL);
-		//printf("Writeing Sections : %i\n", writePoeration);
+	
+		if (writePoeration == 0)
+			error("could not write memory in target process, Run As Admin");
 	}
 
 	// Allocating memory for the loader code.
 	PVOID LoaderMemory = VirtualAllocEx(hProcess, NULL, 4096, MEM_COMMIT | MEM_RESERVE,
 		PAGE_EXECUTE_READWRITE);
 
-	//printf("loader Memory Alocated : 0x%p\n", LoaderMemory);
+	if (LoaderMemory == 0)
+		error("could not allocate memory in target process, Run As Admin");
 
 	LoaderParams.ImageBase = ExecutableImage;
 	LoaderParams.NtHeaders = (PIMAGE_NT_HEADERS)((LPBYTE)ExecutableImage + pDosHeader->e_lfanew);
@@ -219,8 +234,8 @@ int main(int argc, char*argv[])
 	HANDLE hThread = CreateRemoteThread(hProcess, NULL, 0, (LPTHREAD_START_ROUTINE)((loaderdata*)LoaderMemory + 1),
 		LoaderMemory, 0, NULL);
 
-	//std::cout << "Address of Loader: " << std::hex << LoaderMemory << std::endl;
-	//std::cout << "Address of Image: " << std::hex << ExecutableImage << std::endl;
+	if(hThread == 0)
+		error("could not start thread in target process, Run As Admin");
 
 	// Wait for the loader to finish executing
 	WaitForSingleObject(hThread, 100);
@@ -232,7 +247,7 @@ int main(int argc, char*argv[])
 	CloseHandle(hProcess);//
 
 	printf("injected\n");
-	system("pause");
+	system("pause Last");
 
 	return 0;
 }
